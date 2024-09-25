@@ -1,0 +1,15 @@
+// Verifica se o payload já é um objeto
+if (typeof msg.payload === 'object') {
+    // Se já é um objeto, apenas extrai o status
+    msg.payload = msg.payload.status; 
+} else {
+    // Caso contrário, tenta analisar o payload como JSON
+    try {
+        var payload = JSON.parse(msg.payload);
+        msg.payload = payload.status; // Mantém apenas o status "Ocupado" ou "Livre"
+    } catch (e) {
+        // Se ocorrer um erro, apenas define como 'Erro' para facilitar a depuração
+        msg.payload = 'Erro ao analisar JSON: ' + e.message;
+    }
+}
+return msg; // Retorna a nova mensagem

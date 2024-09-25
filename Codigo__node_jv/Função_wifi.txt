@@ -1,0 +1,60 @@
+console.log("Payload recebido:", msg.payload); 
+
+// Verifica se msg.payload é um array de objetos e não está vazio
+if (Array.isArray(msg.payload) && msg.payload.length > 0) {
+    // Definindo os locais com os SSIDs relevantes
+    var locations = {
+        "Local 1": { ssids: ["apgeovi", "[LG_Wall-Mount A/C]3315", "VIVOFIBRA-33BB"] },
+        "Local 2": { ssids: ["B", "C", "D"] }
+    };
+
+    // Inicializa a variável ondeestar e rede
+    var ondeestar = null;
+    var rede = [];
+
+    // Inicializa contadores para cada local
+    var localCounts = {
+        "Local 1": 0,
+        "Local 2": 0
+    };
+
+    // Verifica cada SSID no payload
+    msg.payload.forEach(wifi => {
+        var ssid = wifi.SSID;
+        
+        // Verifica se o SSID recebido está em Local 1
+        if (locations["Local 1"].ssids.includes(ssid)) {
+            localCounts["Local 1"]++;
+        }
+        
+        // Verifica se o SSID recebido está em Local 2
+        if (locations["Local 2"].ssids.includes(ssid)) {
+            localCounts["Local 2"]++;
+        }
+    });
+
+    // Determina qual local tem a maior contagem de SSIDs
+    if (localCounts["Local 1"] > localCounts["Local 2"] && localCounts["Local 1"] > 0) {
+        ondeestar = 1;  // Local 1 tem mais SSIDs
+        rede = locations["Local 1"].ssids; // Adiciona os SSIDs de Local 1
+    } else if (localCounts["Local 2"] > localCounts["Local 1"] && localCounts["Local 2"] > 0) {
+        ondeestar = 2;  // Local 2 tem mais SSIDs
+        rede = locations["Local 2"].ssids; // Adiciona os SSIDs de Local 2
+    }
+
+    // Define a mensagem de saída
+    if (ondeestar !== null) {
+        msg.payload = {
+            local: ondeestar,
+            rede: rede.join(', ')  // Converte o array de SSIDs para uma string
+        };
+    } else {
+        msg.payload = {
+            error: 'Nenhum SSID encontrado em Local 1 ou Local 2'
+        };
+    }
+} else {
+    msg.payload = { error: 'Payload não é um array válido ou está vazio: ' + typeof msg.payload };
+}
+
+return msg; // Retorna a nova mensagem
