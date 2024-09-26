@@ -4,8 +4,8 @@
 #include <ArduinoJson.h>  // Biblioteca para manipulação de JSON
 
 // Configurações Wi-Fi
-const char* ssid = "apgeovi";
-const char* password = "redeapgeovi72";
+const char* ssid = "nome da rede";
+const char* password = "senha da rede";
 
 // Configurações do broker MQTT
 const char* mqtt_server = "187.35.47.129";
